@@ -18,10 +18,10 @@
     npm install
     ```
 
-3. Use dapp suite
+3. Generate bytecode and abi of smart-contracts using [dapp](https://github.com/dapphub/dapp) suite
 
     ```
-    npm compile
+    npm run compile
     ```
 
 ## Testing
