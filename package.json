@@ -7,13 +7,16 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "mocha tests/competition.js"
+    "test": "mocha tests/competition.js",
+    "localnode": "node_modules/.bin/testrpc -l 7000000",
+    "compile": "dapp build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.1.2",
     "file-system": "^2.2.2",
+    "mocha": "^3.5.3",
     "web3": "^1.0.0-beta.21"
   }
 }
