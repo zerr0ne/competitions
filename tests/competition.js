@@ -17,6 +17,7 @@ describe('Competition', function() {
     return web3.eth.getAccounts()
     .then(function(accounts) {
       defaultAccount = accounts[0];
+      console.log(defaultAccount);
       contract = new web3.eth.Contract(abi);
       return contract.deploy({
           data: bin,
@@ -26,23 +27,29 @@ describe('Competition', function() {
     .then(function(result) {
       contract = result;
     })
+    .catch(function(e) {
+      console.log(e);
+    });
   })
 
   it('Check if Registration leads to Hopeful Entry', function() {
     let hash = web3.utils.soliditySha3('\x19Ethereum Signed Message:\n32', TERMS_AND_CONDITIONS);
-    return web3.eth.sign(hash, defaultAccount)
-    .then(function(sig) {
-      sig = sig.substr(2, sig.length);
+    console.log(hash);
+    return web3.eth.sign(web3.utils.hexToBytes(hash), defaultAccount)
+    .then(function(da) {
+      let sig = da.substr(2, da.length);
       let r = '0x' + sig.substr(0, 64);
       let s = '0x' + sig.substr(64, 64);
       let v = parseFloat(sig.substr(128, 2)) + 27;
-      //MELON_ASSET as Dummy for Fund Address
-      return contract.methods.registerForCompetition(
-        MELON_ASSET, MELON_ASSET, MELON_ASSET, 20, v, r, s
-      )
+      //v = v.toString(16);
+      console.log(v);
+      console.log(r);
+      console.log(s);
+      return contract.methods.termsAndConditionsAreSigned(v, r, s)
       .call({from: defaultAccount});
     })
     .then(function(result) {
+      console.log(result);
       return contract.methods.hopefuls(0).call();
     })
     .then(function(hopeful) {
