@@ -1,34 +1,11 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.13;
 
 import "erc20/erc20.sol";
-
-/// @title Desing by contract (Hoare logic)
-/// @author Melonport AG <team@melonport.com>
-/// @notice Gives deriving contracts design by contract modifiers
-contract DBC {
-
-    // MODIFIERS
-
-    modifier pre_cond(bool condition) {
-        require(condition);
-        _;
-    }
-
-    modifier post_cond(bool condition) {
-        _;
-        assert(condition);
-    }
-
-    modifier invariant(bool condition) {
-        require(condition);
-        _;
-        assert(condition);
-    }
-}
+import './DBC.sol';
 
 /// @title Competition Contract
 /// @author Melonport AG <team@melonport.com>
-/// @notice Links Melon Funds to Competition
+/// @notice Register Melon funds in competition
 contract Competition is DBC {
 
     // TYPES
@@ -41,7 +18,7 @@ contract Competition is DBC {
         address payoutAsset; // Asset (usually Melon Token) to be received as prize
         uint depositQuantity; // Quantity of depositAsset spent
         uint payoutQuantity; // Quantity of payoutAsset received as prize
-        uint finalSharePrice; // Can be changed for any other comparison metric
+        uint finalSharePrice; // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
     }
 
     // FIELDS
@@ -59,8 +36,7 @@ contract Competition is DBC {
     uint public prizeMoneyQuantity; // Total prize money pool
     address public MELON_ASSET; // Adresss of Melon asset contract
     ERC20 public MELON_CONTRACT; // Melon as ERC20 contract
-
-    // Function fields
+    // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
 
     // PRE, POST, INVARIANT CONDITIONS
@@ -70,7 +46,7 @@ contract Competition is DBC {
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
     /// @return Whether or not terms and conditions have been read and understood
-    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) returns (bool) {
+    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) internal returns (bool) {
         return ecrecover(
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
@@ -99,9 +75,7 @@ contract Competition is DBC {
         MELON_CONTRACT = ERC20(MELON_ASSET);
     }
 
-
-    /// @notice To take part in the competition
-    /// @dev Maintainer of above identities mapping (== owner) can trigger this function
+    /// @notice Register to take part in the competition
     /// @param fund Address of the Melon fund
     /// @param depositAsset Asset (ERC20 Token) spent to take part in competition
     /// @param payoutAsset Asset (usually Melon Token) to be received as prize
@@ -119,16 +93,14 @@ contract Competition is DBC {
         bytes32 s
     )
         pre_cond(termsAndConditionsAreSigned(v, r, s))
-        /* In later version
-         * require depositAsset == MELON_ASSET
-         * require payoutAsset == MELON_ASSET
-         * require depositQuantity <= maxDepositQuantity
-         * require hopefuls.length < maxHopefulsNumber
-         * require hopefuls.length < maxHopefulsNumber
-         */
+        // In later version
+        //  require depositAsset == MELON_ASSET
+        //  require payoutAsset == MELON_ASSET
+        //  require depositQuantity <= maxDepositQuantity
+        //  require hopefuls.length < maxHopefulsNumber
+        //  require fund.sharePrice == 1 MELON_BASE_UNITS
     {
-        uint id = hopefuls.length;
-        hopefuls[id] = Hopeful({
+        hopefuls.push(Hopeful({
           fund: fund,
           manager: msg.sender,
           isCompeting: true,
@@ -137,6 +109,6 @@ contract Competition is DBC {
           depositQuantity: depositQuantity,
           payoutQuantity: 0,
           finalSharePrice: 0
-        });
+        }));
     }
 }
