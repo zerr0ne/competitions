@@ -1,0 +1,164 @@
+[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "TERMS_AND_CONDITIONS",
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "fund", "type": "address" },
+      { "name": "depositAsset", "type": "address" },
+      { "name": "payoutAsset", "type": "address" },
+      { "name": "depositQuantity", "type": "uint256" },
+      { "name": "v", "type": "uint8" },
+      { "name": "r", "type": "bytes32" },
+      { "name": "s", "type": "bytes32" }
+    ],
+    "name": "registerForCompetition",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "maxDepositQuantity",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "endTime",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "prizeMoneyAsset",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getMelonAsset",
+    "outputs": [{ "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "maxHopefulsNumber",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "startTime",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "prizeMoneyQuantity",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "MELON_ASSET",
+    "outputs": [{ "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "MELON_CONTRACT",
+    "outputs": [{ "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "MAX_CONTRIBUTION_DURATION",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{ "name": "", "type": "uint256" }],
+    "name": "hopefuls",
+    "outputs": [
+      { "name": "fund", "type": "address" },
+      { "name": "manager", "type": "address" },
+      { "name": "isCompeting", "type": "bool" },
+      { "name": "depositAsset", "type": "address" },
+      { "name": "payoutAsset", "type": "address" },
+      { "name": "depositQuantity", "type": "uint256" },
+      { "name": "payoutQuantity", "type": "uint256" },
+      { "name": "finalSharePrice", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "v", "type": "uint8" },
+      { "name": "r", "type": "bytes32" },
+      { "name": "s", "type": "bytes32" }
+    ],
+    "name": "termsAndConditionsAreSigned",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "melonport",
+    "outputs": [{ "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "ofMelonAsset", "type": "address" }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  }
+]

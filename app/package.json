@@ -1,0 +1,28 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-scripts": "1.0.13",
+    "web3": "^1.0.0-beta.21"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "flow": "flow"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.0",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.3.0",
+    "flow-bin": "^0.55.0",
+    "prettier-eslint": "^8.1.1"
+  }
+}
