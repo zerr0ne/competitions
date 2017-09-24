@@ -1,12 +1,15 @@
+// @flow
+/* eslint-disable */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Web3 from 'web3'
+import Web3 from 'web3';
 import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
-var web3;
 
-window.addEventListener('load', async function() {
+let web3;
+
+window.addEventListener('load', async () => {
   let web3Provided;
   if (typeof web3 !== 'undefined') {
     web3Provided = new Web3(web3.currentProvider);
@@ -14,10 +17,10 @@ window.addEventListener('load', async function() {
     web3Provided = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
   }
 
-  let accounts = await web3Provided.eth.getAccounts();
+  const accounts = await web3Provided.eth.getAccounts();
 
   ReactDOM.render(
-    <App web3={web3Provided} account={accounts[0]}/>,
-    document.getElementById('root')
-  )
+    <App web3={web3Provided} account={accounts[0]} />,
+    document.getElementById('root'),
+  );
 });

@@ -1,3 +1,4 @@
+// @flow
 import React, { Component } from 'react';
 import VaultJson from '../contracts/Vault.json';
 
@@ -7,8 +8,8 @@ class Start extends Component {
     this.state = {
       vaultAddress: '',
       errorMessage: '',
-      step: 1
-    }
+      step: 1,
+    };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -22,14 +23,13 @@ class Start extends Component {
     event.preventDefault();
     try {
       const contract = await new this.props.web3.eth.Contract(
-        VaultJson.abi, this.props.vaultAddress
+        VaultJson.abi,
+        this.props.vaultAddress,
       );
-      let vaultOwner = await contract.methods.owner().call();
+      const vaultOwner = await contract.methods.owner().call();
       if (vaultOwner !== this.props.account) throw new Error('Invalid Account');
       this.props.updateState('step', 2);
-    }
-    catch(err) {
-      console.log(err);
+    } catch (err) {
       this.props.updateState('errorMessage', 'Error');
     }
   }
@@ -37,11 +37,16 @@ class Start extends Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label>
-          Enter your Vault Address
-        </label>
-        <input type="text" className="form-control" value={this.props.vaultAddress} onChange={this.handleChange} required />
-        <input type="submit" className="btn btn-info" value="Submit"/>
+        <label htmlFor="address">Enter your Vault Address</label>
+        <input
+          type="text"
+          id="address"
+          className="form-control"
+          value={this.props.vaultAddress}
+          onChange={this.handleChange}
+          required
+        />
+        <input type="submit" className="btn btn-info" value="Submit" />
       </form>
     );
   }

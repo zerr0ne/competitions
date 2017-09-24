@@ -1,3 +1,4 @@
+// @flow
 import React, { Component } from 'react';
 import './App.css';
 import Start from './components/Start';
@@ -6,33 +7,41 @@ import Confirmation from './components/Confirmation';
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       vaultAddress: '',
       errorMessage: '',
-      step: 1
-    }
+      step: 1,
+    };
     this.updateState = this.updateState.bind(this);
   }
 
   updateState(variable, value) {
-    this.setState({[variable]: value});
+    this.setState({ [variable]: value });
   }
 
   showForm() {
     switch (this.state.step) {
       default:
-        return <Start updateState = {this.updateState}
-                      vaultAddress = {this.state.vaultAddress}
-                      account = {this.props.account}
-                      web3 = {this.props.web3}  />
+        return (
+          <Start
+            updateState={this.updateState}
+            vaultAddress={this.state.vaultAddress}
+            account={this.props.account}
+            web3={this.props.web3}
+          />
+        );
       case 2:
-        return <Registration updateState = {this.updateState}
-                             vaultAddress = {this.state.vaultAddress}
-                             account = {this.props.account}
-                             web3 = {this.props.web3}  />
+        return (
+          <Registration
+            updateState={this.updateState}
+            vaultAddress={this.state.vaultAddress}
+            account={this.props.account}
+            web3={this.props.web3}
+          />
+        );
       case 3:
-        return <Confirmation />
+        return <Confirmation />;
     }
   }
 
@@ -42,15 +51,15 @@ class App extends Component {
         <div className="alert alert-warning" role="alert">
           {this.state.errorMessage}
         </div>
-      )
+      );
     }
   }
 
   render() {
-    //From tommymarshall/react-multi-step-form
-    let progressStyle = {
-      width : (this.state.step / 3 * 100) + '%'
-    }
+    //  From tommymarshall/react-multi-step-form
+    const progressStyle = {
+      width: `${this.state.step / 3 * 100}%`,
+    };
 
     return (
       <div className="ribbon">
@@ -61,16 +70,20 @@ class App extends Component {
               <div className="row">
                 <div className="col-12">
                   <div className="progress">
-                    <div className="progress-bar bg-info" role="progressbar" style={progressStyle}></div>
+                    <div
+                      className="progress-bar bg-info"
+                      role="progressbar"
+                      style={progressStyle}
+                    />
                   </div>
                   {this.showError()}
                   {this.showForm()}
                 </div>
               </div>
             </div>
+          </div>
         </div>
       </div>
-    </div>
     );
   }
 }
