@@ -24,7 +24,6 @@ class Registration extends Component {
   }
 
   async sign() {
-    console.log(this.props.web3.currentProvider.isMetaMask);
     let hash = TERMS_AND_CONDITIONS;
     if (this.props.web3.currentProvider.isMetaMask) {
       hash = TERMS_AND_CONDITIONS_METAMASK;
@@ -32,7 +31,6 @@ class Registration extends Component {
     let sig = await this.props.web3.eth.sign(hash, this.props.account);
     sig = sig.substr(2, sig.length);
     const r = `0x${sig.substr(0, 64)}`;
-    console.log(r);
     const s = `0x${sig.substr(64, 64)}`;
     const v = parseFloat(sig.substr(128, 2)) + 27;
     return { r, s, v };
@@ -49,7 +47,6 @@ class Registration extends Component {
         .send({ from: this.props.account });
       this.props.updateState('step', 3);
     } catch (err) {
-      console.log(err);
       this.props.updateState('errorMessage', 'Registration Failed. Try again');
     }
   }
