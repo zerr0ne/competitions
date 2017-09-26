@@ -18,7 +18,7 @@ class Registration extends Component {
   }
 
   async componentWillMount() {
-    const contract = await new this.props.web3.eth.Contract(VaultJson.abi, this.props.vaultAddress);
+    const contract = await new this.props.web3.eth.Contract(VaultJson.abi, this.props.fundAddress);
     const fund = await contract.methods.name().call();
     this.setState({ fundName: fund });
   }
@@ -43,11 +43,12 @@ class Registration extends Component {
       const { r, s, v } = await this.sign();
       this.setState({ loading: 1 });
       await contract.methods
-        .registerForCompetition(this.props.vaultAddress, melonToken, melonToken, 10, v, r, s)
+        .registerForCompetition(this.props.fundAddress, melonToken, melonToken, 10, v, r, s)
         .send({ from: this.props.account });
       this.props.updateState('step', 3);
     } catch (err) {
       this.props.updateState('errorMessage', 'Registration Failed. Try again');
+      this.setState({ loading: 0 });
     }
   }
 

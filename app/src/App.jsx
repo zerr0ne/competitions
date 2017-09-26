@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      vaultAddress: '',
+      fundAddress: '',
       errorMessage: '',
       step: 1,
     };
@@ -26,7 +26,7 @@ class App extends Component {
         return (
           <Start
             updateState={this.updateState}
-            vaultAddress={this.state.vaultAddress}
+            fundAddress={this.state.fundAddress}
             account={this.props.account}
             web3={this.props.web3}
           />
@@ -35,7 +35,7 @@ class App extends Component {
         return (
           <Registration
             updateState={this.updateState}
-            vaultAddress={this.state.vaultAddress}
+            fundAddress={this.state.fundAddress}
             account={this.props.account}
             web3={this.props.web3}
           />
