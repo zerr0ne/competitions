@@ -14,9 +14,9 @@ contract Competition is DBC {
         address fund; // Address of the Melon fund
         address manager; // Manager (== owner) of above Melon fund
         bool isCompeting; // Whether currently taking part in a competition
-        address depositAsset; // Asset (ERC20 Token) spent to take part in competition
+        address buyinAsset; // Asset (ERC20 Token) spent to take part in competition
         address payoutAsset; // Asset (usually Melon Token) to be received as prize
-        uint depositQuantity; // Quantity of depositAsset spent
+        uint buyinQuantitiy; // Quantity of buyinAsset spent
         uint payoutQuantity; // Quantity of payoutAsset received as prize
         uint finalSharePrice; // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
     }
@@ -30,7 +30,7 @@ contract Competition is DBC {
     address public melonport; // All deposited tokens will be instantly forwarded to this address.
     uint public startTime; // Competition start time in seconds
     uint public endTime; // Competition end time in seconds
-    uint public maxDepositQuantity; // Limit amount of deposit to participate in competition
+    uint public maxbuyinQuantitiy; // Limit amount of deposit to participate in competition
     uint public maxHopefulsNumber; // Limit number of participate in competition
     uint public prizeMoneyAsset; // Equivalent to payoutAsset
     uint public prizeMoneyQuantity; // Total prize money pool
@@ -77,26 +77,26 @@ contract Competition is DBC {
 
     /// @notice Register to take part in the competition
     /// @param fund Address of the Melon fund
-    /// @param depositAsset Asset (ERC20 Token) spent to take part in competition
+    /// @param buyinAsset Asset (ERC20 Token) spent to take part in competition
     /// @param payoutAsset Asset (usually Melon Token) to be received as prize
-    /// @param depositQuantity Quantity of depositAsset spent
+    /// @param buyinQuantitiy Quantity of buyinAsset spent
     /// @param v ellipitc curve parameter v
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
     function registerForCompetition(
         address fund,
-        address depositAsset,
+        address buyinAsset,
         address payoutAsset,
-        uint depositQuantity,
+        uint buyinQuantitiy,
         uint8 v,
         bytes32 r,
         bytes32 s
     )
         pre_cond(termsAndConditionsAreSigned(v, r, s))
         // In later version
-        //  require depositAsset == MELON_ASSET
+        //  require buyinAsset == MELON_ASSET
         //  require payoutAsset == MELON_ASSET
-        //  require depositQuantity <= maxDepositQuantity
+        //  require buyinQuantitiy <= maxbuyinQuantitiy
         //  require hopefuls.length < maxHopefulsNumber
         //  require fund.sharePrice == 1 MELON_BASE_UNITS
     {
@@ -104,9 +104,9 @@ contract Competition is DBC {
           fund: fund,
           manager: msg.sender,
           isCompeting: true,
-          depositAsset: depositAsset,
+          buyinAsset: buyinAsset,
           payoutAsset: payoutAsset,
-          depositQuantity: depositQuantity,
+          buyinQuantitiy: buyinQuantitiy,
           payoutQuantity: 0,
           finalSharePrice: 0
         }));
