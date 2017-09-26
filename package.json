@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "dapp build && mocha tests/competition.js",
+    "test": "dapp build && mocha --compilers js:babel-core/register tests/competition.js",
     "localnode": "node_modules/.bin/testrpc -l 7000000",
     "compile": "dapp build"
   },
@@ -15,13 +15,23 @@
   "license": "ISC",
   "homepage": "https://github.com/melonproject/competitions#readme",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
-    "babel-runtime": "^6.26.0"
+    "babel-runtime": "^6.26.0",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-flowtype": "^2.36.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.4.0",
+    "install": "^0.10.1",
+    "prettier-eslint": "^8.1.1"
   },
   "dependencies": {
     "chai": "^4.1.2",

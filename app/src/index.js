@@ -7,8 +7,6 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
-let web3;
-
 window.addEventListener('load', async () => {
   let web3Provided;
   if (typeof web3 !== 'undefined') {
