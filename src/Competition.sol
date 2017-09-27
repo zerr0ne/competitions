@@ -115,12 +115,8 @@ contract Competition is DBC {
     )
         pre_cond(termsAndConditionsAreSigned(v, r, s))
         pre_cond(isSMSVerified(msg.sender))
-        // In later version
-        //  require is SMS verified
-        //  require buyinAsset == MELON_ASSET
-        //  require payoutAsset == MELON_ASSET
-        //  require buyinQuantity <= maxbuyinQuantity
-        //  require hopefuls.length < maxHopefulsNumber
+        pre_cond(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET)
+        pre_cond(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber)
     {
         hopefuls.push(Hopeful({
           fund: fund,
@@ -166,7 +162,7 @@ contract Competition is DBC {
         pre_cond(isOracle())
         pre_cond(block.timestamp >= endTime)
     {
-        hopefuls[withId].payoutQuantity = payoutQuantity;
+        //hopefuls[withId].payoutQuantity = payoutQuantity;
         hopefuls[withId].finalSharePrice = finalSharePrice;
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
         require(MELON_CONTRACT.transfer(hopefuls[withId].manager, payoutQuantity));
