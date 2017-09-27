@@ -17,7 +17,7 @@ contract Competition is DBC {
         bool hasSigned; // Whether initial requirements passed and Hopeful signed Terms and Conditions; Does not mean Hopeful is competing yet
         address buyinAsset; // Asset (ERC20 Token) spent to take part in competition
         address payoutAsset; // Asset (usually Melon Token) to be received as prize
-        uint buyinQuantitiy; // Quantity of buyinAsset spent
+        uint buyinQuantity; // Quantity of buyinAsset spent
         uint payoutQuantity; // Quantity of payoutAsset received as prize
         bool isCompeting; // Whether outside oracle verified remaining requirements; If yes Hopeful is taking part in a competition
         uint finalSharePrice; // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
@@ -32,9 +32,9 @@ contract Competition is DBC {
     // Constructor fields
     address public oracle; // Information e.g. from Kovan can be passed to contract from this address
     address public melonport; // All deposited tokens will be instantly forwarded to this address.
-    uint public startTime; // Competition start time in seconds
+    uint public startTime = 9923423412413123; // Competition start time in seconds
     uint public endTime; // Competition end time in seconds
-    uint public maxbuyinQuantitiy; // Limit amount of deposit to participate in competition
+    uint public maxbuyinQuantity; // Limit amount of deposit to participate in competition
     uint public maxHopefulsNumber; // Limit number of participate in competition
     uint public prizeMoneyAsset; // Equivalent to payoutAsset
     uint public prizeMoneyQuantity; // Total prize money pool
@@ -84,19 +84,23 @@ contract Competition is DBC {
     function Competition(
         address ofMelonAsset,
         address ofOracle,
-        address ofSMSVerification
+        address ofSMSVerification,
+        uint ofMaxbuyinQuantity,
+        uint ofMaxHopefulsNumber
     ) {
         MELON_ASSET = ofMelonAsset;
         MELON_CONTRACT = ERC20(MELON_ASSET);
         oracle = ofOracle;
         SMS_VERIFICATION = ProofOfSMSInterface(ofSMSVerification);
+        maxbuyinQuantity = ofMaxbuyinQuantity;
+        maxHopefulsNumber = ofMaxHopefulsNumber;
     }
 
     /// @notice Register to take part in the competition
     /// @param fund Address of the Melon fund
     /// @param buyinAsset Asset (ERC20 Token) spent to take part in competition
     /// @param payoutAsset Asset (usually Melon Token) to be received as prize
-    /// @param buyinQuantitiy Quantity of buyinAsset spent
+    /// @param buyinQuantity Quantity of buyinAsset spent
     /// @param v ellipitc curve parameter v
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
@@ -104,7 +108,7 @@ contract Competition is DBC {
         address fund,
         address buyinAsset,
         address payoutAsset,
-        uint buyinQuantitiy,
+        uint buyinQuantity,
         uint8 v,
         bytes32 r,
         bytes32 s
@@ -115,7 +119,7 @@ contract Competition is DBC {
         //  require is SMS verified
         //  require buyinAsset == MELON_ASSET
         //  require payoutAsset == MELON_ASSET
-        //  require buyinQuantitiy <= maxbuyinQuantitiy
+        //  require buyinQuantity <= maxbuyinQuantity
         //  require hopefuls.length < maxHopefulsNumber
     {
         hopefuls.push(Hopeful({
@@ -124,7 +128,7 @@ contract Competition is DBC {
           hasSigned: true,
           buyinAsset: buyinAsset,
           payoutAsset: payoutAsset,
-          buyinQuantitiy: buyinQuantitiy,
+          buyinQuantity: buyinQuantity,
           payoutQuantity: 0,
           isCompeting: false,
           finalSharePrice: 0,
@@ -135,15 +139,16 @@ contract Competition is DBC {
     /// @notice Initial oracle service, attests for fund sharePrice being one
     /// @dev Only the oracle can call this function
     /// @param withId Index of Hopeful to be attest for
+    /// @param sharePrice sharePrice of the hopeful Fund
     function attestForHopeful(
-        uint withId
+        uint withId,
+        uint sharePrice
     )
         pre_cond(isOracle())
-        // In later version
-        //  require is at or before startTime
+        pre_cond(block.timestamp <= startTime)
         //  require fund.sharePrice == 1 MELON_BASE_UNITS
     {
-
+        hopefuls[withId].isCompeting = true;
     }
 
     /// @notice Closing oracle service, inputs final stats and triggers payouts
@@ -159,11 +164,12 @@ contract Competition is DBC {
         uint finalCompetitionRank // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
     )
         pre_cond(isOracle())
-        // In later version
-        //  require is at or after endTime
+        pre_cond(block.timestamp >= endTime)
     {
-        // Update hopeful entry
-        // Payout prize money
+        hopefuls[withId].payoutQuantity = payoutQuantity;
+        hopefuls[withId].finalSharePrice = finalSharePrice;
+        hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
+        require(MELON_CONTRACT.transfer(hopefuls[withId].manager, payoutQuantity));
     }
 
 
