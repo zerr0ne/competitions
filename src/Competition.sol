@@ -2,13 +2,12 @@ pragma solidity ^0.4.13;
 
 import "erc20/erc20.sol";
 import './DBC.sol';
-import './Owned.sol';
 import './ProofOfSMSInterface.sol';
 
 /// @title Competition Contract
 /// @author Melonport AG <team@melonport.com>
 /// @notice Register Melon funds in competition
-contract Competition is DBC, Owned {
+contract Competition is DBC {
 
     // TYPES
 
