@@ -18,9 +18,10 @@ contract Competition is DBC {
         address buyinAsset; // Asset (ERC20 Token) spent to take part in competition
         address payoutAsset; // Asset (usually Melon Token) to be received as prize
         uint buyinQuantitiy; // Quantity of buyinAsset spent
-        uint payoutQuantity; // Quantity of payoutAsset received as prieze
+        uint payoutQuantity; // Quantity of payoutAsset received as prize
         bool isCompeting; // Whether outside oracle verified remaining requirements; If yes Hopeful is taking part in a competition
         uint finalSharePrice; // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
+        uint finalCompetitionRank; // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
     }
 
     // FIELDS
@@ -126,7 +127,8 @@ contract Competition is DBC {
           buyinQuantitiy: buyinQuantitiy,
           payoutQuantity: 0,
           isCompeting: false,
-          finalSharePrice: 0
+          finalSharePrice: 0,
+          finalCompetitionRank: 0
         }));
     }
 
@@ -144,17 +146,24 @@ contract Competition is DBC {
 
     }
 
-    /// @notice Closing oracle service, inputs finalSharePrice and triggers payouts
+    /// @notice Closing oracle service, inputs final stats and triggers payouts
     /// @dev Only the oracle can call this function
     /// @param withId Index of Hopeful to be attest for
-    function payoutForHopeful(
-        uint withId
+    /// @param payoutQuantity Quantity of payoutAsset received as prize
+    /// @param finalSharePrice Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
+    /// @param finalCompetitionRank Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
+    function finalizeAndPayoutForHopeful(
+        uint withId,
+        uint payoutQuantity, // Quantity of payoutAsset received as prize
+        uint finalSharePrice, // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
+        uint finalCompetitionRank // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
     )
         pre_cond(isOracle())
         // In later version
         //  require is at or after endTime
     {
-
+        // Update hopeful entry
+        // Payout prize money
     }
 
 
