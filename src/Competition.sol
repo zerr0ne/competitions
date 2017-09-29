@@ -13,7 +13,7 @@ contract Competition is DBC {
 
     struct Hopeful { // Someone who wants to succeed or who seems likely to win
         address fund; // Address of the Melon fund
-        address manager; // Manager (== owner) of above Melon fund
+        address registrant; // Manager (== owner) of above Melon fund
         bool hasSigned; // Whether initial requirements passed and Hopeful signed Terms and Conditions; Does not mean Hopeful is competing yet
         address buyinAsset; // Asset (ERC20 Token) spent to take part in competition
         address payoutAsset; // Asset (usually Melon Token) to be received as prize
@@ -38,11 +38,19 @@ contract Competition is DBC {
     uint public maxHopefulsNumber; // Limit number of participate in competition
     uint public prizeMoneyAsset; // Equivalent to payoutAsset
     uint public prizeMoneyQuantity; // Total prize money pool
+    uint public MELON_BASE_UNIT = 10 ** 18;
     address public MELON_ASSET; // Adresss of Melon asset contract
     ERC20 public MELON_CONTRACT; // Melon as ERC20 contract
     ProofOfSMSInterface public SMS_VERIFICATION; // Parity sms verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
+
+    //EVENTS
+    event Register(
+        uint withId,
+        address fund,
+        address manager
+    );
 
     // PRE, POST, INVARIANT CONDITIONS
 
@@ -120,7 +128,7 @@ contract Competition is DBC {
     {
         hopefuls.push(Hopeful({
           fund: fund,
-          manager: msg.sender,
+          registrant: msg.sender,
           hasSigned: true,
           buyinAsset: buyinAsset,
           payoutAsset: payoutAsset,
@@ -130,6 +138,7 @@ contract Competition is DBC {
           finalSharePrice: 0,
           finalCompetitionRank: 0
         }));
+        Register(hopefuls.length - 1, fund, msg.sender);
     }
 
     /// @notice Initial oracle service, attests for fund sharePrice being one
@@ -142,7 +151,7 @@ contract Competition is DBC {
     )
         pre_cond(isOracle())
         pre_cond(block.timestamp <= startTime)
-        //  require fund.sharePrice == 1 MELON_BASE_UNITS
+        pre_cond(sharePrice == MELON_BASE_UNIT)
     {
         hopefuls[withId].isCompeting = true;
     }
@@ -165,8 +174,7 @@ contract Competition is DBC {
         //hopefuls[withId].payoutQuantity = payoutQuantity;
         hopefuls[withId].finalSharePrice = finalSharePrice;
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
-        require(MELON_CONTRACT.transfer(hopefuls[withId].manager, payoutQuantity));
+        require(MELON_CONTRACT.transfer(hopefuls[withId].registrant, payoutQuantity));
     }
-
 
 }
