@@ -1,6 +1,5 @@
 // @flow
 import React, { Component } from 'react';
-import VaultJson from '../contracts/Vault.json';
 
 class Start extends Component {
   constructor(props) {
@@ -16,18 +15,12 @@ class Start extends Component {
 
   async handleSubmit(event) {
     event.preventDefault();
-    try {
-      const contract = await new this.props.web3.eth.Contract(
-        VaultJson.abi,
-        this.props.fundAddress,
-      );
-      const fundManager = await contract.methods.owner().call();
-      if (fundManager !== this.props.account) throw new Error('Invalid Account');
+    if (this.props.web3.utils.isAddress(this.props.fundAddress)) {
       this.props.updateState('step', 2);
-    } catch (err) {
+    } else {
       this.props.updateState(
         'errorMessage',
-        'Error! Please make sure you entered a valid Fund address and you are its manager. Also make sure you are connected to a Kovan node',
+        'Error! Please make sure you entered a valid Fund address. Also make sure you are connected to a Mainnet node',
       );
     }
   }

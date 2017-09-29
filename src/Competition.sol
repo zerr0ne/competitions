@@ -29,21 +29,22 @@ contract Competition is DBC {
     // Constant fields
     uint public constant MAX_CONTRIBUTION_DURATION = 4 weeks; // Max amount in seconds of competition
     bytes32 public constant TERMS_AND_CONDITIONS = 0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad; // Hashed terms and conditions as displayed on IPFS.
+    uint public MELON_BASE_UNIT = 10 ** 18;
     // Constructor fields
     address public oracle; // Information e.g. from Kovan can be passed to contract from this address
     address public melonport; // All deposited tokens will be instantly forwarded to this address.
-    uint public startTime = 9923423412413123; // Competition start time in seconds
+    uint public startTime; // Competition start time in seconds (Temporarily Set)
     uint public endTime; // Competition end time in seconds
     uint public maxbuyinQuantity; // Limit amount of deposit to participate in competition
     uint public maxHopefulsNumber; // Limit number of participate in competition
     uint public prizeMoneyAsset; // Equivalent to payoutAsset
     uint public prizeMoneyQuantity; // Total prize money pool
-    uint public MELON_BASE_UNIT = 10 ** 18;
     address public MELON_ASSET; // Adresss of Melon asset contract
     ERC20 public MELON_CONTRACT; // Melon as ERC20 contract
     ProofOfSMSInterface public SMS_VERIFICATION; // Parity sms verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
+    mapping(address => uint) public hopefulIds; //For address indexed accessing of hopeful ids
 
     //EVENTS
     event Register(
@@ -93,6 +94,8 @@ contract Competition is DBC {
         address ofMelonAsset,
         address ofOracle,
         address ofSMSVerification,
+        uint ofStartTime,
+        uint ofEndTime,
         uint ofMaxbuyinQuantity,
         uint ofMaxHopefulsNumber
     ) {
@@ -100,6 +103,8 @@ contract Competition is DBC {
         MELON_CONTRACT = ERC20(MELON_ASSET);
         oracle = ofOracle;
         SMS_VERIFICATION = ProofOfSMSInterface(ofSMSVerification);
+        startTime = ofStartTime;
+        endTime = ofEndTime;
         maxbuyinQuantity = ofMaxbuyinQuantity;
         maxHopefulsNumber = ofMaxHopefulsNumber;
     }
@@ -138,6 +143,7 @@ contract Competition is DBC {
           finalSharePrice: 0,
           finalCompetitionRank: 0
         }));
+        hopefulIds[msg.sender] = hopefuls.length - 1;
         Register(hopefuls.length - 1, fund, msg.sender);
     }
 

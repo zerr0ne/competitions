@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Start from './components/Start';
+import SMSVerification from './components/SMSVerification';
 import Registration from './components/Registration';
 import Confirmation from './components/Confirmation';
 
@@ -33,7 +34,7 @@ class App extends Component {
         );
       case 2:
         return (
-          <Registration
+          <SMSVerification
             updateState={this.updateState}
             fundAddress={this.state.fundAddress}
             account={this.props.account}
@@ -41,6 +42,15 @@ class App extends Component {
           />
         );
       case 3:
+        return (
+          <Registration
+            updateState={this.updateState}
+            fundAddress={this.state.fundAddress}
+            account={this.props.account}
+            web3={this.props.web3}
+          />
+        );
+      case 4:
         return <Confirmation />;
     }
   }
@@ -58,7 +68,7 @@ class App extends Component {
   render() {
     //  From tommymarshall/react-multi-step-form
     const progressStyle = {
-      width: `${this.state.step / 3 * 100}%`,
+      width: `${this.state.step / 4 * 100}%`,
     };
 
     return (

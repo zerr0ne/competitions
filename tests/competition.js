@@ -44,7 +44,7 @@ before('Deploy contract', async () => {
   contract = await new web3.eth.Contract(abi)
     .deploy({
       data: bin,
-      arguments: [token.options.address, accounts[0], sms.options.address, 600, 80],
+      arguments: [token.options.address, accounts[0], sms.options.address, 900000000000, 0, 600, 80],
     })
     .send({ from: accounts[0], gas: 2000000 });
 });
@@ -66,6 +66,11 @@ describe('Competition', () => {
       .send({ from: accounts[1], gas: 1000000 });
     const hopeful = await contract.methods.hopefuls(0).call();
     assert.equal(hopeful.registrant, accounts[1]);
+  });
+
+  it('Check if hopefulIds mappings work', async () => {
+    const hopefulId = await contract.methods.hopefulIds(accounts[0]).call();
+    assert.equal(hopefulId, 0);
   });
 
   it('Check if Registration fails on non-verified SMS', async () => {
