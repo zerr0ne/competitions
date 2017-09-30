@@ -68,7 +68,7 @@ class App extends Component {
   render() {
     //  From tommymarshall/react-multi-step-form
     const progressStyle = {
-      width: `${this.state.step / 4 * 100}%`,
+      width: `${this.state.step / 3 * 100}%`,
     };
 
     return (

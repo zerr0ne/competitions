@@ -12,6 +12,7 @@ class SMSVerification extends Component {
     this.handleCodeChange = this.handleCodeChange.bind(this);
     this.handleNext = this.handleNext.bind(this);
     this.handleBack = this.handleBack.bind(this);
+    this.interval = null;
   }
 
   async componentWillMount() {
@@ -19,9 +20,10 @@ class SMSVerification extends Component {
     const fee = await contract.methods.fee().call();
     this.setState({ fee });
     this.setState({ contract });
+    this.interval = setInterval(this.checkVerified.bind(this), 1000);
   }
 
-  componentWillUnMount() {
+  componentWillUnmount() {
     clearInterval(this.interval);
   }
   //  Fee for SMSVerification
@@ -35,7 +37,6 @@ class SMSVerification extends Component {
       this.setState({ loading: '' });
       this.setState({ stage: 2 });
     } catch (err) {
-      console.log(err);
       this.props.updateState('errorMessage', 'Registration Failed. Try again');
       this.setState({ loading: '' });
     }
@@ -48,15 +49,13 @@ class SMSVerification extends Component {
       await this.state.contract.methods
         .confirm(hash)
         .send({ from: this.props.account });
-      this.interval = setInterval(this.checkVerified.bind(this), 1000);
     } catch (err) {
-      console.log(err);
       this.props.updateState('errorMessage', 'Registration Failed. Try again');
       this.setState({ loading: '' });
     }
   }
 
-  async handleNext(event) {
+  handleNext(event) {
     event.preventDefault();
     switch (this.state.stage) {
       default:
