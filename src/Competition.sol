@@ -44,14 +44,11 @@ contract Competition is DBC {
     ProofOfSMSInterface public SMS_VERIFICATION; // Parity sms verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
-    mapping(address => uint) public hopefulIds; //For address indexed accessing of hopeful ids
-
+    mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
+    mapping(address => uint) public registrantToHopefulIds; // For registrant address indexed accessing of hopeful ids
     //EVENTS
-    event Register(
-        uint withId,
-        address fund,
-        address manager
-    );
+
+    event Register(uint withId, address fund, address manager);
 
     // PRE, POST, INVARIANT CONDITIONS
 
@@ -82,7 +79,6 @@ contract Competition is DBC {
     /// @dev Whether message sender is SMS verified
     /// @param x Address to be checked for SMS verification
     function isSMSVerified(address x) internal returns (bool) { return SMS_VERIFICATION.certified(x); }
-
 
     // CONSTANT METHODS
 
@@ -126,8 +122,8 @@ contract Competition is DBC {
         bytes32 r,
         bytes32 s
     )
-        pre_cond(termsAndConditionsAreSigned(v, r, s))
-        pre_cond(isSMSVerified(msg.sender))
+        pre_cond(termsAndConditionsAreSigned(v, r, s) && isSMSVerified(msg.sender))
+        pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender] == 0)
         pre_cond(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET)
         pre_cond(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber)
     {
@@ -143,8 +139,11 @@ contract Competition is DBC {
           finalSharePrice: 0,
           finalCompetitionRank: 0
         }));
-        hopefulIds[msg.sender] = hopefuls.length - 1;
-        Register(hopefuls.length - 1, fund, msg.sender);
+        registeredFundToRegistrants[fund] = msg.sender;
+        // For non-zero indexed mapping of registrantToHopefulIds
+        // since zero is the default value which is used to check for non-existent mapping
+        registrantToHopefulIds[msg.sender] = hopefuls.length;
+        Register(hopefuls.length, fund, msg.sender);
     }
 
     /// @notice Initial oracle service, attests for fund sharePrice being one
@@ -177,7 +176,6 @@ contract Competition is DBC {
         pre_cond(isOracle())
         pre_cond(block.timestamp >= endTime)
     {
-        //hopefuls[withId].payoutQuantity = payoutQuantity;
         hopefuls[withId].finalSharePrice = finalSharePrice;
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
         require(MELON_CONTRACT.transfer(hopefuls[withId].registrant, payoutQuantity));

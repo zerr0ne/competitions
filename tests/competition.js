@@ -68,9 +68,21 @@ describe('Competition', () => {
     assert.equal(hopeful.registrant, accounts[1]);
   });
 
-  it('Check if hopefulIds mappings work', async () => {
-    const hopefulId = await contract.methods.hopefulIds(accounts[0]).call();
-    assert.equal(hopefulId, 0);
+  it('Check if registrantToHopefulIds mappings work', async () => {
+    const hopefulId = await contract.methods.registrantToHopefulIds(accounts[1]).call();
+    assert.equal(hopefulId, 1);
+  });
+
+  it('Check if Double Registration fails', async () => {
+    let error;
+    try {
+      const { r, s, v } = await sign(accounts[1]);
+      await contract.methods
+        .registerForCompetition(token.options.address, token.options.address, token.options.address, 20, v, r, s)
+        .send({ from: accounts[1], gas: 1000000 });
+    }
+    catch (err) {error = err;}
+    assert.isDefined(error, 'Exception must be thrown');
   });
 
   it('Check if Registration fails on non-verified SMS', async () => {
@@ -83,14 +95,6 @@ describe('Competition', () => {
     }
     catch (err) {error = err;}
     assert.isDefined(error, 'Exception must be thrown');
-  });
-
-  it('Check if isCompeting is set to true on Attestation', async () => {
-    await contract.methods
-      .attestForHopeful(0, 10 ** 18)
-      .send({ from: accounts[0], gas: 1000000 });
-    const hopeful = await contract.methods.hopefuls(0).call();
-    assert.isTrue(hopeful.isCompeting);
   });
 
   it('Check if isCompeting is set to true on Attestation', async () => {
