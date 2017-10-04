@@ -24,6 +24,11 @@ contract Competition is DBC {
         uint finalCompetitionRank; // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
     }
 
+    struct HopefulId {
+      uint id; // Actual Hopeful Id
+      bool exists; // Used to check if the mapping exists
+    }
+
     // FIELDS
 
     // Constant fields
@@ -45,7 +50,7 @@ contract Competition is DBC {
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
     mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
-    mapping(address => uint) public registrantToHopefulIds; // For registrant address indexed accessing of hopeful ids
+    mapping(address => HopefulId) public registrantToHopefulIds; // For registrant address indexed accessing of hopeful ids
     //EVENTS
 
     event Register(uint withId, address fund, address manager);
@@ -83,6 +88,9 @@ contract Competition is DBC {
     // CONSTANT METHODS
 
     function getMelonAsset() constant returns (address) { return MELON_ASSET; }
+
+    /// @return Get HopefulId from registrant address
+    function getHopefulId(address x) constant returns (uint) { return registrantToHopefulIds[x].id; }
 
     // NON-CONSTANT METHODS
 
@@ -123,10 +131,15 @@ contract Competition is DBC {
         bytes32 s
     )
         pre_cond(termsAndConditionsAreSigned(v, r, s) && isSMSVerified(msg.sender))
-        pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender] == 0)
+        pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender].exists == false)
         pre_cond(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET)
         pre_cond(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber)
     {
+        registeredFundToRegistrants[fund] = msg.sender;
+        // For non-zero indexed mapping of registrantToHopefulIds
+        // since zero is the default value which is used to check for non-existent mapping
+        registrantToHopefulIds[msg.sender] = HopefulId({id: hopefuls.length, exists: true});
+        Register(hopefuls.length, fund, msg.sender);
         hopefuls.push(Hopeful({
           fund: fund,
           registrant: msg.sender,
@@ -139,11 +152,6 @@ contract Competition is DBC {
           finalSharePrice: 0,
           finalCompetitionRank: 0
         }));
-        registeredFundToRegistrants[fund] = msg.sender;
-        // For non-zero indexed mapping of registrantToHopefulIds
-        // since zero is the default value which is used to check for non-existent mapping
-        registrantToHopefulIds[msg.sender] = hopefuls.length;
-        Register(hopefuls.length, fund, msg.sender);
     }
 
     /// @notice Initial oracle service, attests for fund sharePrice being one
@@ -178,6 +186,7 @@ contract Competition is DBC {
     {
         hopefuls[withId].finalSharePrice = finalSharePrice;
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
+        hopefuls[withId].payoutQuantity = payoutQuantity;
         require(MELON_CONTRACT.transfer(hopefuls[withId].registrant, payoutQuantity));
     }
 

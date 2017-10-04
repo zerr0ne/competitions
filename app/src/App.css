@@ -46,3 +46,9 @@ h3 {
 .progress-bar {
   height: 10px;
 }
+
+.alert-success span{
+  font-size: 0.8em;
+  color: #616161;
+  margin-top: 5px;
+}

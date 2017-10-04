@@ -68,9 +68,9 @@ describe('Competition', () => {
     assert.equal(hopeful.registrant, accounts[1]);
   });
 
-  it('Check if registrantToHopefulIds mappings work', async () => {
-    const hopefulId = await contract.methods.registrantToHopefulIds(accounts[1]).call();
-    assert.equal(hopefulId, 1);
+  it('Check if getHopefulId works', async () => {
+    const hopefulId = await contract.methods.getHopefulId(accounts[1]).call();
+    assert.equal(hopefulId, 0);
   });
 
   it('Check if Double Registration fails', async () => {
