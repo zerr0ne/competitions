@@ -16,3 +16,5 @@
     ```
     forever start daemon.js
     ```
+5. In case some transactions fail due to unexpected issues like Parity node crashes, out of balance, The events
+are saved to the db. Run backlog.js to process the failed events.

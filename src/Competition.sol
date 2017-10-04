@@ -136,8 +136,6 @@ contract Competition is DBC {
         pre_cond(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber)
     {
         registeredFundToRegistrants[fund] = msg.sender;
-        // For non-zero indexed mapping of registrantToHopefulIds
-        // since zero is the default value which is used to check for non-existent mapping
         registrantToHopefulIds[msg.sender] = HopefulId({id: hopefuls.length, exists: true});
         Register(hopefuls.length, fund, msg.sender);
         hopefuls.push(Hopeful({
