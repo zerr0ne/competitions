@@ -5,7 +5,7 @@ const Datastore = require('nedb');
 
 const db = new Datastore({ filename: 'events.db', autoload: true });
 const competitionAbi = JSON.parse(
-  fs.readFileSync("../out/Competition.abi", "utf8"),
+  fs.readFileSync(__dirname + "/../out/Competition.abi", "utf8"),
 );
 const fundAbi = require("@melonproject/protocol/build/contracts/Fund.json").abi;
 
