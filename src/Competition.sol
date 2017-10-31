@@ -2,7 +2,7 @@ pragma solidity ^0.4.13;
 
 import "erc20/erc20.sol";
 import './DBC.sol';
-import './ProofOfSMSInterface.sol';
+import './SimpleCertifier.sol';
 
 /// @title Competition Contract
 /// @author Melonport AG <team@melonport.com>
@@ -46,7 +46,7 @@ contract Competition is DBC {
     uint public prizeMoneyQuantity; // Total prize money pool
     address public MELON_ASSET; // Adresss of Melon asset contract
     ERC20 public MELON_CONTRACT; // Melon as ERC20 contract
-    ProofOfSMSInterface public SMS_VERIFICATION; // Parity sms verification contract
+    SimpleCertifier public PICOPS; // Parity KYC verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
     mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
@@ -81,9 +81,9 @@ contract Competition is DBC {
     /// @return Whether message sender is oracle or not
     function isOracle() internal returns (bool) { return msg.sender == oracle; }
 
-    /// @dev Whether message sender is SMS verified
-    /// @param x Address to be checked for SMS verification
-    function isSMSVerified(address x) internal returns (bool) { return SMS_VERIFICATION.certified(x); }
+    /// @dev Whether message sender is KYC verified through PICOPS
+    /// @param x Address to be checked for KYC verification
+    function isKYCVerified(address x) internal returns (bool) { return PICOPS.certified(x); }
 
     // CONSTANT METHODS
 
@@ -97,7 +97,7 @@ contract Competition is DBC {
     function Competition(
         address ofMelonAsset,
         address ofOracle,
-        address ofSMSVerification,
+        address ofSimpleCertifier,
         uint ofStartTime,
         uint ofEndTime,
         uint ofMaxbuyinQuantity,
@@ -106,7 +106,7 @@ contract Competition is DBC {
         MELON_ASSET = ofMelonAsset;
         MELON_CONTRACT = ERC20(MELON_ASSET);
         oracle = ofOracle;
-        SMS_VERIFICATION = ProofOfSMSInterface(ofSMSVerification);
+        PICOPS = SimpleCertifier(ofSimpleCertifier);
         startTime = ofStartTime;
         endTime = ofEndTime;
         maxbuyinQuantity = ofMaxbuyinQuantity;
@@ -130,7 +130,7 @@ contract Competition is DBC {
         bytes32 r,
         bytes32 s
     )
-        pre_cond(termsAndConditionsAreSigned(v, r, s) && isSMSVerified(msg.sender))
+        pre_cond(termsAndConditionsAreSigned(v, r, s) && isKYCVerified(msg.sender))
         pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender].exists == false)
         pre_cond(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET)
         pre_cond(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber)

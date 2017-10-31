@@ -1,8 +1,10 @@
-//! SMS verification contract
-//! By Gav Wood, 2016.
+//! SimpleCertifier contract, taken from paritytech/sms-verification
+//! By Gav Wood (Parity Technologies), 2016.
+//! Released under the Apache Licence 2.
 
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.7;
 
+// From Owned.sol
 contract Owned {
 	modifier only_owner { if (msg.sender != owner) return; _; }
 
@@ -13,6 +15,7 @@ contract Owned {
 	address public owner = msg.sender;
 }
 
+// From Certifier.sol
 contract Certifier {
 	event Confirmed(address indexed who);
 	event Revoked(address indexed who);
@@ -48,51 +51,4 @@ contract SimpleCertifier is Owned, Certifier {
 	mapping (address => Certification) certs;
 	// So that the server posting puzzles doesn't have access to the ETH.
 	address public delegate = msg.sender;
-}
-
-
-
-contract ProofOfSMS is SimpleCertifier {
-
-	modifier when_fee_paid { if (msg.value < fee) return; _; }
-
-	event Requested(address indexed who);
-	event Puzzled(address indexed who, bytes32 puzzle);
-
-	function request() payable when_fee_paid {
-		if (certs[msg.sender].active)
-			return;
-		Requested(msg.sender);
-	}
-
-	function puzzle(address _who, bytes32 _puzzle) only_delegate {
-		puzzles[_who] = _puzzle;
-		Puzzled(_who, _puzzle);
-	}
-
-	function confirm(bytes32 _code) returns (bool) {
-		if (puzzles[msg.sender] != sha3(_code))
-			return;
-		delete puzzles[msg.sender];
-		certs[msg.sender].active = true;
-		Confirmed(msg.sender);
-		return true;
-	}
-
-	function setFee(uint _new) only_owner {
-		fee = _new;
-	}
-
-	function drain() only_owner {
-		if (!msg.sender.send(this.balance))
-			throw;
-	}
-
-	function certified(address _who) constant returns (bool) {
-		return certs[_who].active;
-	}
-
-	mapping (address => bytes32) puzzles;
-
-	uint public fee = 30 finney;
 }

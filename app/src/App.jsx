@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Start from './components/Start';
-import SMSVerification from './components/SMSVerification';
+import KYCVerification from './components/KYCVerification';
 import Registration from './components/Registration';
 import Confirmation from './components/Confirmation';
 
@@ -34,7 +34,7 @@ class App extends Component {
         );
       case 2:
         return (
-          <SMSVerification
+          <KYCVerification
             updateState={this.updateState}
             fundAddress={this.state.fundAddress}
             account={this.props.account}
@@ -68,7 +68,7 @@ class App extends Component {
   render() {
     //  From tommymarshall/react-multi-step-form
     const progressStyle = {
-      width: `${this.state.step / 3 * 100}%`,
+      width: `${(this.state.step / 3) * 100}%`,
     };
 
     return (

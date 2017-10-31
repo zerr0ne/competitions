@@ -5,8 +5,8 @@ const fs = require('fs');
 const assert = chai.assert;
 const abi = JSON.parse(fs.readFileSync('./out/Competition.abi', 'utf8'));
 const bin = fs.readFileSync('./out/Competition.bin', 'utf8');
-const smsAbi = JSON.parse(fs.readFileSync('./out/ProofOfSMS.abi', 'utf8'));
-const smsBin = fs.readFileSync('./out/ProofOfSMS.bin', 'utf8');
+const simpleCertifierAbi = JSON.parse(fs.readFileSync('./out/SimpleCertifier.abi', 'utf8'));
+const simpleCertifierBin = fs.readFileSync('./out/SimpleCertifier.bin', 'utf8');
 const tokenAbi = JSON.parse(fs.readFileSync('./out/DSTokenBase.abi', 'utf8'));
 const tokenBin = fs.readFileSync('./out/DSTokenBase.bin', 'utf8');
 const TERMS_AND_CONDITIONS = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
@@ -24,14 +24,14 @@ const sign = async (account) => {
 
 let accounts;
 let contract;
-let sms;
+let simpleCertifier;
 let token;
 
 before('Deploy contract', async () => {
   accounts = await web3.eth.getAccounts();
-  sms = await new web3.eth.Contract(smsAbi)
+  simpleCertifier = await new web3.eth.Contract(simpleCertifierAbi)
     .deploy({
-      data: smsBin,
+      data: simpleCertifierBin,
       arguments: [],
     })
     .send({ from: accounts[0], gas: 2000000 });
@@ -44,7 +44,7 @@ before('Deploy contract', async () => {
   contract = await new web3.eth.Contract(abi)
     .deploy({
       data: bin,
-      arguments: [token.options.address, accounts[0], sms.options.address, 900000000000, 0, 600, 80],
+      arguments: [token.options.address, accounts[0], simpleCertifier.options.address, 900000000000, 0, 600, 80],
     })
     .send({ from: accounts[0], gas: 2000000 });
 });
@@ -58,7 +58,7 @@ describe('Competition', () => {
 
   it('Check if Registration leads to Hopeful Entry', async () => {
     const { r, s, v } = await sign(accounts[1]);
-    await sms.methods
+    await simpleCertifier.methods
       .certify(accounts[1])
       .send({ from: accounts[0], gas: 1000000 });
     await contract.methods
