@@ -53,7 +53,7 @@ class Start extends Component {
           onChange={this.handleChange}
           required
         />
-        <input type="submit" className="btn btn-info" value="Submit" />
+        <input type="submit" className="btn btn-secondary" value="Submit" />
       </form>
     );
   }
