@@ -19,6 +19,7 @@ contract Competition is DBC {
         address payoutAsset; // Asset (usually Melon Token) to be received as prize
         uint buyinQuantity; // Quantity of buyinAsset spent
         uint payoutQuantity; // Quantity of payoutAsset received as prize
+        address payoutAddress; // Address to payout in main chain
         bool isCompeting; // Whether outside oracle verified remaining requirements; If yes Hopeful is taking part in a competition
         uint finalSharePrice; // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
         uint finalCompetitionRank; // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
@@ -46,7 +47,7 @@ contract Competition is DBC {
     uint public prizeMoneyQuantity; // Total prize money pool
     address public MELON_ASSET; // Adresss of Melon asset contract
     ERC20 public MELON_CONTRACT; // Melon as ERC20 contract
-    SimpleCertifier public PICOPS; // Parity KYC verification contract
+    Certifier public PICOPS; // Parity KYC verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
     mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
@@ -97,7 +98,7 @@ contract Competition is DBC {
     function Competition(
         address ofMelonAsset,
         address ofOracle,
-        address ofSimpleCertifier,
+        address ofCertifier,
         uint ofStartTime,
         uint ofEndTime,
         uint ofMaxbuyinQuantity,
@@ -106,7 +107,7 @@ contract Competition is DBC {
         MELON_ASSET = ofMelonAsset;
         MELON_CONTRACT = ERC20(MELON_ASSET);
         oracle = ofOracle;
-        PICOPS = SimpleCertifier(ofSimpleCertifier);
+        PICOPS = Certifier(ofCertifier);
         startTime = ofStartTime;
         endTime = ofEndTime;
         maxbuyinQuantity = ofMaxbuyinQuantity;
@@ -125,6 +126,7 @@ contract Competition is DBC {
         address fund,
         address buyinAsset,
         address payoutAsset,
+        address payoutAddress,
         uint buyinQuantity,
         uint8 v,
         bytes32 r,
@@ -132,9 +134,9 @@ contract Competition is DBC {
     )
         pre_cond(termsAndConditionsAreSigned(v, r, s) && isKYCVerified(msg.sender))
         pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender].exists == false)
-        pre_cond(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET)
-        pre_cond(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber)
     {
+        require(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET);
+        require(buyinQuantity <= maxbuyinQuantity && hopefuls.length <= maxHopefulsNumber);
         registeredFundToRegistrants[fund] = msg.sender;
         registrantToHopefulIds[msg.sender] = HopefulId({id: hopefuls.length, exists: true});
         Register(hopefuls.length, fund, msg.sender);
@@ -144,6 +146,7 @@ contract Competition is DBC {
           hasSigned: true,
           buyinAsset: buyinAsset,
           payoutAsset: payoutAsset,
+          payoutAddress: payoutAddress,
           buyinQuantity: buyinQuantity,
           payoutQuantity: 0,
           isCompeting: false,
@@ -186,6 +189,17 @@ contract Competition is DBC {
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
         hopefuls[withId].payoutQuantity = payoutQuantity;
         require(MELON_CONTRACT.transfer(hopefuls[withId].registrant, payoutQuantity));
+    }
+
+    /// @notice Changes certifier contract address
+    /// @dev Only the oracle can call this function
+    /// @param newCertifier Address of the new certifier
+    function changeCertifier(
+        address newCertifier
+    )
+        pre_cond(isOracle())
+    {
+        PICOPS = Certifier(newCertifier);
     }
 
 }
