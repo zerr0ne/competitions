@@ -10,7 +10,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run-script build:postprocess",
+    "build:postprocess": "npm run-script delete-maps && npm run-script rename-absolute-path",
+    "delete-maps": "find ./build -name '*.map' -delete",
+    "rename-absolute-path": "sed -i -e 's@/static/@./static/@g' ./build/index.html",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow"
