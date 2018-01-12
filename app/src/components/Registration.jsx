@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import competitionAbi from '../contracts/Competition.json';
 
-const competitionAddress = '0x366ce0e3dF87E0d39a65CB00059F4BF6cB70E699';
+const competitionAddress = '0x9a0a055DE5eff167B8383D9D4f91F98b6116D30D';
 const melonToken = '0x2a20ff70596e431ab26C2365acab1b988DA8eCCF';
 const TERMS_AND_CONDITIONS = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
 const TERMS_AND_CONDITIONS_METAMASK =

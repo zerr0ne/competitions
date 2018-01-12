@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import simpleCertifierAbi from '../contracts/SimpleCertifier.json';
 
-const picopsAddress = '0x1e2f058c43ac8965938f6e9ca286685a3e63f24e';
+const picopsAddress = '0xc44F7d71d1a9E5221E0c7b58b73109457251e4Dc';
 
 class KYCVerification extends Component {
   constructor(props) {
