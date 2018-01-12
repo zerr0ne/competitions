@@ -12,7 +12,7 @@ window.addEventListener('load', async () => {
   if (typeof web3 !== 'undefined') {
     web3Provided = new Web3(web3.currentProvider);
   } else {
-    web3Provided = new Web3(new Web3.providers.HttpProvider('https://kovan.infura.io'));
+    web3Provided = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
   }
 
   const accounts = await web3Provided.eth.getAccounts();
