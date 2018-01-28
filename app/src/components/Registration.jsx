@@ -11,15 +11,17 @@ const TERMS_AND_CONDITIONS_METAMASK =
 class Registration extends Component {
   constructor(props) {
     super(props);
-    this.state = { loading: 0, contract: '' };
+    this.state = { loading: 0, contract: '', payoutAddress: '' };
     this.handleNext = this.handleNext.bind(this);
     this.handleBack = this.handleBack.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.interval = null;
   }
 
   async componentWillMount() {
     const contract = await new this.props.web3.eth.Contract(competitionAbi, competitionAddress);
     this.setState({ contract });
+    this.setState({ payoutAddress: this.props.account });
     // Interval started from this point itself to check if user has already registered before
     this.interval = setInterval(this.checkCompeting.bind(this), 1000);
   }
@@ -47,7 +49,16 @@ class Registration extends Component {
       const { r, s, v } = await this.sign();
       this.setState({ loading: 1 });
       await this.state.contract.methods
-        .registerForCompetition(this.props.fundAddress, melonToken, melonToken, 10, v, r, s)
+        .registerForCompetition(
+          this.props.fundAddress,
+          melonToken,
+          melonToken,
+          this.state.payoutAddress,
+          0,
+          v,
+          r,
+          s,
+        )
         .send({ from: this.props.account });
     } catch (err) {
       this.props.updateState('errorMessage', 'Registration Failed. Try again');
@@ -58,6 +69,10 @@ class Registration extends Component {
   handleBack(event) {
     event.preventDefault();
     this.props.updateState('step', 2);
+  }
+
+  handleChange(event) {
+    this.setState({ payoutAddress: event.target.value });
   }
 
   // Check if the registration has been attested and user is Competing
@@ -78,6 +93,7 @@ class Registration extends Component {
         }
       }
     } catch (err) {
+      console.log(err);
       // Ignore
     }
   }
@@ -90,7 +106,19 @@ class Registration extends Component {
             <b>Please wait</b>, your registration is being processed
           </div>
         )}
-        <b>Fund Address : {this.props.fundAddress}</b><br /><br />
+        <b>Fund Address : {this.props.fundAddress}</b>
+        <br />
+        <br />
+        <b>Payout Address</b>:{' '}
+        <input
+          type="text"
+          id="payout"
+          name="payout"
+          value={this.state.payoutAddress}
+          onChange={this.handleChange}
+          required
+        />
+        <br />
         <label htmlFor="terms">Terms and Conditions</label>
         <p>Some Placeholder</p>
         <input type="checkbox" id="terms" name="terms" required />I have read the terms<br />

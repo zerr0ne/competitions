@@ -21,6 +21,7 @@ contract Competition is DBC {
         uint payoutQuantity; // Quantity of payoutAsset received as prize
         address payoutAddress; // Address to payout in main chain
         bool isCompeting; // Whether outside oracle verified remaining requirements; If yes Hopeful is taking part in a competition
+        bool isDisqualified; // Whether participant is disqualified
         uint finalSharePrice; // Performance of Melon fund at competition endTime; Can be changed for any other comparison metric
         uint finalCompetitionRank; // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
     }
@@ -149,25 +150,22 @@ contract Competition is DBC {
           payoutAddress: payoutAddress,
           buyinQuantity: buyinQuantity,
           payoutQuantity: 0,
-          isCompeting: false,
+          isCompeting: true,
+          isDisqualified: false,
           finalSharePrice: 0,
           finalCompetitionRank: 0
         }));
     }
 
-    /// @notice Initial oracle service, attests for fund sharePrice being one
+    /// @notice Disqualify and participant
     /// @dev Only the oracle can call this function
-    /// @param withId Index of Hopeful to be attest for
-    /// @param sharePrice sharePrice of the hopeful Fund
-    function attestForHopeful(
-        uint withId,
-        uint sharePrice
+    /// @param withId Index of Hopeful to disqualify
+    function disqualifyHopeful(
+        uint withId
     )
         pre_cond(isOracle())
-        pre_cond(block.timestamp <= startTime)
-        pre_cond(sharePrice == MELON_BASE_UNIT)
     {
-        hopefuls[withId].isCompeting = true;
+        hopefuls[withId].isDisqualified = false;
     }
 
     /// @notice Closing oracle service, inputs final stats and triggers payouts
@@ -183,6 +181,7 @@ contract Competition is DBC {
         uint finalCompetitionRank // Rank of Hopeful at end of competition; Calculate by logic as set in terms and conditions
     )
         pre_cond(isOracle())
+        pre_cond(hopefuls[withId].isDisqualified == false)
         pre_cond(block.timestamp >= endTime)
     {
         hopefuls[withId].finalSharePrice = finalSharePrice;
