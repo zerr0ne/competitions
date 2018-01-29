@@ -2,8 +2,8 @@
 import React, { Component } from 'react';
 import competitionAbi from '../contracts/Competition.json';
 
-const competitionAddress = '0x9a0a055DE5eff167B8383D9D4f91F98b6116D30D';
-const melonToken = '0x2a20ff70596e431ab26C2365acab1b988DA8eCCF';
+const competitionAddress = '0xe2FDF582672a5D188Ae98a1512282B23d5e3AEda';
+const melonToken = '0x2a20ff70596e431ab26c2365acab1b988da8eccf';
 const TERMS_AND_CONDITIONS = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
 const TERMS_AND_CONDITIONS_METAMASK =
   '0x93100cc9477ba6522a2d7d5e83d0e075b167224ed8aa0c5860cfd47fa9f22797';
@@ -93,7 +93,6 @@ class Registration extends Component {
         }
       }
     } catch (err) {
-      console.log(err);
       // Ignore
     }
   }
@@ -113,6 +112,7 @@ class Registration extends Component {
         <input
           type="text"
           id="payout"
+          className="form-control"
           name="payout"
           value={this.state.payoutAddress}
           onChange={this.handleChange}

@@ -15,7 +15,7 @@ class KYCVerification extends Component {
   async componentWillMount() {
     const contract = await new this.props.web3.eth.Contract(simpleCertifierAbi, picopsAddress);
     this.setState({ contract });
-    this.interval = setInterval(this.checkVerified.bind(this), 5000);
+    this.interval = setInterval(this.checkVerified.bind(this), 1000);
   }
 
   componentWillUnmount() {
@@ -23,15 +23,12 @@ class KYCVerification extends Component {
   }
 
   async checkVerified() {
-    //console.log(this.state.contract);
-    /*const verified = await this.state.contract.methods
+    const verified = await this.state.contract.methods
       .certified(this.props.account)
       .call();
     if (verified === true) {
       this.props.updateState('step', 3);
     }
-    */
-    this.props.updateState('step', 3);
   }
 
   handleBack(event) {
