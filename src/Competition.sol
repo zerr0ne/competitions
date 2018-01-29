@@ -1,6 +1,6 @@
 pragma solidity ^0.4.13;
 
-import "erc20/erc20.sol";
+import "./ERC20Interface.sol";
 import './DBC.sol';
 import './SimpleCertifier.sol';
 
@@ -47,7 +47,7 @@ contract Competition is DBC {
     uint public prizeMoneyAsset; // Equivalent to payoutAsset
     uint public prizeMoneyQuantity; // Total prize money pool
     address public MELON_ASSET; // Adresss of Melon asset contract
-    ERC20 public MELON_CONTRACT; // Melon as ERC20 contract
+    ERC20Interface public MELON_CONTRACT; // Melon as ERC20 contract
     Certifier public PICOPS; // Parity KYC verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
@@ -106,7 +106,7 @@ contract Competition is DBC {
         uint ofMaxHopefulsNumber
     ) {
         MELON_ASSET = ofMelonAsset;
-        MELON_CONTRACT = ERC20(MELON_ASSET);
+        MELON_CONTRACT = ERC20Interface(MELON_ASSET);
         oracle = ofOracle;
         PICOPS = Certifier(ofCertifier);
         startTime = ofStartTime;
