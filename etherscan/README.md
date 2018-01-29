@@ -5,6 +5,7 @@ Source code as required by Etherscan generated using [Solidity Flattener](https:
 ## Usage
 
 ```
+solidity_flattener src/SimpleCertifier.sol --output etherscan/certifierSource.sol
 solidity_flattener src/Competition.sol --output etherscan/competitionSource.sol
 ```
 
