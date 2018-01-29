@@ -1,12 +1,26 @@
 pragma solidity ^0.4.13;
 
-import "./ERC20Interface.sol";
-import './DBC.sol';
-import './SimpleCertifier.sol';
+contract DBC {
 
-/// @title Competition Contract
-/// @author Melonport AG <team@melonport.com>
-/// @notice Register Melon funds in competition
+    // MODIFIERS
+
+    modifier pre_cond(bool condition) {
+        require(condition);
+        _;
+    }
+
+    modifier post_cond(bool condition) {
+        _;
+        assert(condition);
+    }
+
+    modifier invariant(bool condition) {
+        require(condition);
+        _;
+        assert(condition);
+    }
+}
+
 contract Competition is DBC {
 
     // TYPES
@@ -202,3 +216,71 @@ contract Competition is DBC {
     }
 
 }
+
+contract ERC20Interface {
+
+    // EVENTS
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
+    // CONSTANT METHODS
+
+    function totalSupply() constant returns (uint256 totalSupply) {}
+    function balanceOf(address _owner) constant returns (uint256 balance) {}
+    function allowance(address _owner, address _spender) constant returns (uint256 remaining) {}
+
+    // NON-CONSTANT METHODS
+
+    function transfer(address _to, uint256 _value) returns (bool success) {}
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {}
+    function approve(address _spender, uint256 _value) returns (bool success) {}
+}
+
+contract Owned {
+	modifier only_owner { if (msg.sender != owner) return; _; }
+
+	event NewOwner(address indexed old, address indexed current);
+
+	function setOwner(address _new) only_owner { NewOwner(owner, _new); owner = _new; }
+
+	address public owner = msg.sender;
+}
+
+contract Certifier {
+	event Confirmed(address indexed who);
+	event Revoked(address indexed who);
+	function certified(address _who) constant returns (bool);
+	function get(address _who, string _field) constant returns (bytes32) {}
+	function getAddress(address _who, string _field) constant returns (address) {}
+	function getUint(address _who, string _field) constant returns (uint) {}
+}
+
+contract SimpleCertifier is Owned, Certifier {
+	modifier only_delegate { if (msg.sender != delegate) return; _; }
+	modifier only_certified(address _who) { if (!certs[_who].active) return; _; }
+
+	struct Certification {
+		bool active;
+		mapping (string => bytes32) meta;
+	}
+
+	function certify(address _who) only_delegate {
+		certs[_who].active = true;
+		Confirmed(_who);
+	}
+	function revoke(address _who) only_delegate only_certified(_who) {
+		certs[_who].active = false;
+		Revoked(_who);
+	}
+	function certified(address _who) constant returns (bool) { return certs[_who].active; }
+	function get(address _who, string _field) constant returns (bytes32) { return certs[_who].meta[_field]; }
+	function getAddress(address _who, string _field) constant returns (address) { return address(certs[_who].meta[_field]); }
+	function getUint(address _who, string _field) constant returns (uint) { return uint(certs[_who].meta[_field]); }
+	function setDelegate(address _new) only_owner { delegate = _new; }
+
+	mapping (address => Certification) certs;
+	// So that the server posting puzzles doesn't have access to the ETH.
+	address public delegate = msg.sender;
+}
+
