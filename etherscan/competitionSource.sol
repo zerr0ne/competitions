@@ -62,7 +62,7 @@ contract Competition is DBC {
     uint public prizeMoneyQuantity; // Total prize money pool
     address public MELON_ASSET; // Adresss of Melon asset contract
     ERC20Interface public MELON_CONTRACT; // Melon as ERC20 contract
-    Certifier public PICOPS; // Parity KYC verification contract
+    Certifier public CERTIFIER; // Parity KYC verification contract
     // Methods fields
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
     mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
@@ -78,7 +78,7 @@ contract Competition is DBC {
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
     /// @return Whether or not terms and conditions have been read and understood
-    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) internal returns (bool) {
+    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) returns (bool) {
         return ecrecover(
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
@@ -95,11 +95,11 @@ contract Competition is DBC {
     }
 
     /// @return Whether message sender is oracle or not
-    function isOracle() internal returns (bool) { return msg.sender == oracle; }
+    function isOracle() returns (bool) { return msg.sender == oracle; }
 
-    /// @dev Whether message sender is KYC verified through PICOPS
+    /// @dev Whether message sender is KYC verified through CERTIFIER
     /// @param x Address to be checked for KYC verification
-    function isKYCVerified(address x) internal returns (bool) { return PICOPS.certified(x); }
+    function isKYCVerified(address x) returns (bool) { return CERTIFIER.certified(x); }
 
     // CONSTANT METHODS
 
@@ -147,7 +147,7 @@ contract Competition is DBC {
         MELON_ASSET = ofMelonAsset;
         MELON_CONTRACT = ERC20Interface(MELON_ASSET);
         oracle = ofOracle;
-        PICOPS = Certifier(ofCertifier);
+        CERTIFIER = Certifier(ofCertifier);
         startTime = ofStartTime;
         endTime = ofEndTime;
         maxbuyinQuantity = ofMaxbuyinQuantity;
@@ -237,7 +237,7 @@ contract Competition is DBC {
     )
         pre_cond(isOracle())
     {
-        PICOPS = Certifier(newCertifier);
+        CERTIFIER = Certifier(newCertifier);
     }
 
 }
