@@ -13,6 +13,7 @@ contract Competition is DBC {
 
     struct Hopeful { // Someone who wants to succeed or who seems likely to win
         address fund; // Address of the Melon fund
+        address manager; // Address of the fund manager, as used in the ipfs-frontend
         address registrant; // Manager (== owner) of above Melon fund
         bool hasSigned; // Whether initial requirements passed and Hopeful signed Terms and Conditions; Does not mean Hopeful is competing yet
         address buyinAsset; // Asset (ERC20 Token) spent to take part in competition
@@ -62,7 +63,7 @@ contract Competition is DBC {
     // PRE, POST, INVARIANT CONDITIONS
 
     /// @dev Proofs that terms and conditions have been read and understood
-    /// @param byManager address of the fund manager, as used in the ipfs-frontend
+    /// @param byManager Address of the fund manager, as used in the ipfs-frontend
     /// @param v ellipitc curve parameter v
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
@@ -101,6 +102,7 @@ contract Competition is DBC {
     @notice Returns an array of fund addresses and an associated array of whether competing and whether disqualified
     @return {
       "fundAddrs": "Array of addresses of Melon Funds",
+      "fundManagers": "Array of addresses of Melon fund managers, as used in the ipfs-frontend",
       "areCompeting": "Array of boolean of whether or not fund is competing"
       "areDisqualified": "Array of boolean of whether or not fund is disqualified"
     }
@@ -109,16 +111,18 @@ contract Competition is DBC {
         constant
         returns(
             address[] fundAddrs,
+            address[] fundManagers,
             bool[] areCompeting,
             bool[] areDisqualified
         )
     {
         for (uint i = 0; i <= hopefuls.length - 1; i++) {
             fundAddrs[i] = hopefuls[i].fund;
+            fundManagers[i] = hopefuls[i].manager;
             areCompeting[i] = hopefuls[i].isCompeting;
             areDisqualified[i] = hopefuls[i].isDisqualified;
         }
-        return (fundAddrs, areCompeting, areDisqualified);
+        return (fundAddrs, fundManagers, areCompeting, areDisqualified);
     }
 
     // NON-CONSTANT METHODS
@@ -171,6 +175,7 @@ contract Competition is DBC {
         Register(hopefuls.length, fund, msg.sender);
         hopefuls.push(Hopeful({
           fund: fund,
+          manager: manager,
           registrant: msg.sender,
           hasSigned: true,
           buyinAsset: buyinAsset,
