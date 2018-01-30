@@ -10,9 +10,13 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fundAddress: '',
+      fundAddress: this.props.match.params.fund,
       errorMessage: '',
       step: 1,
+      manager: this.props.match.params.manager,
+      v: this.props.match.params.v,
+      r: this.props.match.params.r,
+      s: this.props.match.params.s,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -46,6 +50,10 @@ class App extends Component {
           <Registration
             updateState={this.updateState}
             fundAddress={this.state.fundAddress}
+            manager={this.state.manager}
+            v={this.state.v}
+            r={this.state.r}
+            s={this.state.s}
             account={this.props.account}
             web3={this.props.web3}
           />

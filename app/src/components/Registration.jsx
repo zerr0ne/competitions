@@ -4,7 +4,7 @@ import competitionAbi from '../contracts/Competition.json';
 
 const competitionAddress = '0x5652AC06E148b8c8d86c2C040fdBbbF98860ef47';
 const melonToken = '0xBEB9eF514a379B997e0798FDcC901Ee474B6D9A1';
-const TERMS_AND_CONDITIONS = '0x1a46b45cc849e26bb3159298c3c218ef300d015ed3e23495e77f0e529ce9f69e';
+// const TERMS_AND_CONDITIONS = '0x1a46b45cc849e26bb3159298c3c218ef300d015ed3e23495e77f0e529ce9f69e';
 
 class Registration extends Component {
   constructor(props) {
@@ -28,6 +28,7 @@ class Registration extends Component {
     clearInterval(this.interval);
   }
 
+  /*
   async sign() {
     let hash = TERMS_AND_CONDITIONS;
     let sig = await this.props.web3.eth.sign(hash, this.props.account);
@@ -37,26 +38,28 @@ class Registration extends Component {
     const v = parseFloat(sig.substr(128, 2)) + 27;
     return { r, s, v };
   }
+  */
 
   async handleNext(event) {
     event.preventDefault();
     try {
-      console.log(this.state.payoutAddress);
-      const { r, s, v } = await this.sign();
+      //const { r, s, v } = await this.sign();
       this.setState({ loading: 1 });
       await this.state.contract.methods
         .registerForCompetition(
           this.props.fundAddress,
+          this.props.manager,
           melonToken,
           melonToken,
           this.state.payoutAddress,
           0,
-          v,
-          r,
-          s,
+          this.props.v,
+          this.props.r,
+          this.props.s,
         )
         .send({ from: this.props.account });
     } catch (err) {
+      console.log(err);
       this.props.updateState('errorMessage', 'Registration Failed. Try again');
       this.setState({ loading: 0 });
     }
