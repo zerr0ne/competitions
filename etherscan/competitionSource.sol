@@ -55,7 +55,6 @@ contract Competition is DBC {
     uint public MELON_BASE_UNIT = 10 ** 18;
     // Constructor fields
     address public oracle; // Information e.g. from Kovan can be passed to contract from this address
-    address public melonport; // All deposited tokens will be instantly forwarded to this address.
     uint public startTime; // Competition start time in seconds (Temporarily Set)
     uint public endTime; // Competition end time in seconds
     uint public maxbuyinQuantity; // Limit amount of deposit to participate in competition
@@ -146,7 +145,6 @@ contract Competition is DBC {
         address ofOracle,
         address ofCertifier,
         uint ofStartTime,
-        uint ofEndTime,
         uint ofMaxbuyinQuantity,
         uint ofMaxHopefulsNumber
     ) {
@@ -155,7 +153,7 @@ contract Competition is DBC {
         oracle = ofOracle;
         CERTIFIER = Certifier(ofCertifier);
         startTime = ofStartTime;
-        endTime = ofEndTime;
+        endTime = startTime + 2 weeks;
         maxbuyinQuantity = ofMaxbuyinQuantity;
         maxHopefulsNumber = ofMaxHopefulsNumber;
     }
