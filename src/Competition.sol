@@ -13,6 +13,7 @@ contract Competition is DBC {
 
     struct Hopeful { // Someone who wants to succeed or who seems likely to win
         address fund; // Address of the Melon fund
+        address manager; // Address of the fund manager, as used in the ipfs-frontend
         address registrant; // Manager (== owner) of above Melon fund
         bool hasSigned; // Whether initial requirements passed and Hopeful signed Terms and Conditions; Does not mean Hopeful is competing yet
         address buyinAsset; // Asset (ERC20 Token) spent to take part in competition
@@ -34,12 +35,12 @@ contract Competition is DBC {
     // FIELDS
 
     // Constant fields
-    uint public constant MAX_CONTRIBUTION_DURATION = 4 weeks; // Max amount in seconds of competition
-    bytes32 public constant TERMS_AND_CONDITIONS = 0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad; // Hashed terms and conditions as displayed on IPFS.
+    // Competition terms and conditions as displayed on https://ipfs.io/ipfs/QmQ7DqjpxmTDbaxcH5qwv8QmGvJY7rhb8UV2QRfCEFBp8V
+    // IPFS hash encoded using http://lenschulwitz.com/base58
+    bytes32 public constant TERMS_AND_CONDITIONS = 0x1A46B45CC849E26BB3159298C3C218EF300D015ED3E23495E77F0E529CE9F69E;
     uint public MELON_BASE_UNIT = 10 ** 18;
     // Constructor fields
     address public oracle; // Information e.g. from Kovan can be passed to contract from this address
-    address public melonport; // All deposited tokens will be instantly forwarded to this address.
     uint public startTime; // Competition start time in seconds (Temporarily Set)
     uint public endTime; // Competition end time in seconds
     uint public maxbuyinQuantity; // Limit amount of deposit to participate in competition
@@ -53,6 +54,7 @@ contract Competition is DBC {
     Hopeful[] public hopefuls; // List of all hopefuls, can be externally accessed
     mapping (address => address) public registeredFundToRegistrants; // For fund address indexed accessing of registrant addresses
     mapping(address => HopefulId) public registrantToHopefulIds; // For registrant address indexed accessing of hopeful ids
+
     //EVENTS
 
     event Register(uint withId, address fund, address manager);
@@ -60,11 +62,12 @@ contract Competition is DBC {
     // PRE, POST, INVARIANT CONDITIONS
 
     /// @dev Proofs that terms and conditions have been read and understood
+    /// @param byManager Address of the fund manager, as used in the ipfs-frontend
     /// @param v ellipitc curve parameter v
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
     /// @return Whether or not terms and conditions have been read and understood
-    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) constant returns (bool) {
+    function termsAndConditionsAreSigned(address byManager, uint8 v, bytes32 r, bytes32 s) view returns (bool) {
         return ecrecover(
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
@@ -73,50 +76,52 @@ contract Competition is DBC {
             //  As a result, in order to use this value, you will have to parse it to an
             //  integer and then add 27. This will result in either a 27 or a 28.
             //  https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-            sha3("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
+            keccak256("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
             v,
             r,
             s
-        ) == msg.sender; // Has sender signed TERMS_AND_CONDITIONS
+        ) == byManager; // Has sender signed TERMS_AND_CONDITIONS
     }
 
     /// @return Whether message sender is oracle or not
-    function isOracle() constant returns (bool) { return msg.sender == oracle; }
+    function isOracle() view returns (bool) { return msg.sender == oracle; }
 
     /// @dev Whether message sender is KYC verified through CERTIFIER
     /// @param x Address to be checked for KYC verification
-    function isKYCVerified(address x) constant returns (bool) { return CERTIFIER.certified(x); }
+    function isKYCVerified(address x) view returns (bool) { return CERTIFIER.certified(x); }
 
     // CONSTANT METHODS
 
-    function getMelonAsset() constant returns (address) { return MELON_ASSET; }
+    function getMelonAsset() view returns (address) { return MELON_ASSET; }
 
     /// @return Get HopefulId from registrant address
-    function getHopefulId(address x) constant returns (uint) { return registrantToHopefulIds[x].id; }
-
+    function getHopefulId(address x) view returns (uint) { return registrantToHopefulIds[x].id; }
 
     /**
     @notice Returns an array of fund addresses and an associated array of whether competing and whether disqualified
     @return {
       "fundAddrs": "Array of addresses of Melon Funds",
+      "fundManagers": "Array of addresses of Melon fund managers, as used in the ipfs-frontend",
       "areCompeting": "Array of boolean of whether or not fund is competing"
       "areDisqualified": "Array of boolean of whether or not fund is disqualified"
     }
     */
     function getCompetitionStatusOfHopefuls()
-        constant
+        view
         returns(
             address[] fundAddrs,
+            address[] fundManagers,
             bool[] areCompeting,
             bool[] areDisqualified
         )
     {
         for (uint i = 0; i <= hopefuls.length - 1; i++) {
             fundAddrs[i] = hopefuls[i].fund;
+            fundManagers[i] = hopefuls[i].manager;
             areCompeting[i] = hopefuls[i].isCompeting;
             areDisqualified[i] = hopefuls[i].isDisqualified;
         }
-        return (fundAddrs, areCompeting, areDisqualified);
+        return (fundAddrs, fundManagers, areCompeting, areDisqualified);
     }
 
     // NON-CONSTANT METHODS
@@ -126,7 +131,6 @@ contract Competition is DBC {
         address ofOracle,
         address ofCertifier,
         uint ofStartTime,
-        uint ofEndTime,
         uint ofMaxbuyinQuantity,
         uint ofMaxHopefulsNumber
     ) {
@@ -135,7 +139,7 @@ contract Competition is DBC {
         oracle = ofOracle;
         CERTIFIER = Certifier(ofCertifier);
         startTime = ofStartTime;
-        endTime = ofEndTime;
+        endTime = startTime + 2 weeks;
         maxbuyinQuantity = ofMaxbuyinQuantity;
         maxHopefulsNumber = ofMaxHopefulsNumber;
     }
@@ -150,6 +154,7 @@ contract Competition is DBC {
     /// @param s ellipitc curve parameter s
     function registerForCompetition(
         address fund,
+        address manager,
         address buyinAsset,
         address payoutAsset,
         address payoutAddress,
@@ -158,7 +163,7 @@ contract Competition is DBC {
         bytes32 r,
         bytes32 s
     )
-        pre_cond(termsAndConditionsAreSigned(v, r, s) && isKYCVerified(msg.sender))
+        pre_cond(termsAndConditionsAreSigned(manager, v, r, s) && isKYCVerified(msg.sender))
         pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender].exists == false)
     {
         require(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET);
@@ -168,6 +173,7 @@ contract Competition is DBC {
         Register(hopefuls.length, fund, msg.sender);
         hopefuls.push(Hopeful({
           fund: fund,
+          manager: manager,
           registrant: msg.sender,
           hasSigned: true,
           buyinAsset: buyinAsset,
