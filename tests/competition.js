@@ -7,8 +7,8 @@ const abi = JSON.parse(fs.readFileSync('./out/Competition.abi', 'utf8'));
 const bin = fs.readFileSync('./out/Competition.bin', 'utf8');
 const simpleCertifierAbi = JSON.parse(fs.readFileSync('./out/SimpleCertifier.abi', 'utf8'));
 const simpleCertifierBin = fs.readFileSync('./out/SimpleCertifier.bin', 'utf8');
-const tokenAbi = JSON.parse(fs.readFileSync('./out/DSTokenBase.abi', 'utf8'));
-const tokenBin = fs.readFileSync('./out/DSTokenBase.bin', 'utf8');
+const tokenAbi = JSON.parse(fs.readFileSync('./out/ERC20Interface.abi', 'utf8'));
+const tokenBin = fs.readFileSync('./out/ERC20Interface.bin', 'utf8');
 const TERMS_AND_CONDITIONS = '0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad';
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
