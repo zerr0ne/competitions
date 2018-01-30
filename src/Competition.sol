@@ -94,6 +94,31 @@ contract Competition is DBC {
     /// @return Get HopefulId from registrant address
     function getHopefulId(address x) constant returns (uint) { return registrantToHopefulIds[x].id; }
 
+
+    /**
+    @notice Returns an array of fund addresses and an associated array of whether competing and whether disqualified
+    @return {
+      "fundAddrs": "Array of addresses of Melon Funds",
+      "areCompeting": "Array of boolean of whether or not fund is competing"
+      "areDisqualified": "Array of boolean of whether or not fund is disqualified"
+    }
+    */
+    function getCompetitionStatusOfHopefuls()
+        constant
+        returns(
+            address[] fundAddrs,
+            bool[] areCompeting,
+            bool[] areDisqualified
+        )
+    {
+        for (uint i = 0; i <= hopefuls.length - 1; i++) {
+            fundAddrs[i] = hopefuls[i].fund;
+            areCompeting[i] = hopefuls[i].isCompeting;
+            areDisqualified[i] = hopefuls[i].isDisqualified;
+        }
+        return (fundAddrs, areCompeting, areDisqualified);
+    }
+
     // NON-CONSTANT METHODS
 
     function Competition(
