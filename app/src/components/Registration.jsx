@@ -46,6 +46,7 @@ class Registration extends Component {
   async handleNext(event) {
     event.preventDefault();
     try {
+      console.log(this.state.payoutAddress);
       const { r, s, v } = await this.sign();
       this.setState({ loading: 1 });
       await this.state.contract.methods

@@ -165,7 +165,7 @@ contract Competition is DBC {
     )
         pre_cond(isOracle())
     {
-        hopefuls[withId].isDisqualified = false;
+        hopefuls[withId].isDisqualified = true;
     }
 
     /// @notice Closing oracle service, inputs final stats and triggers payouts
