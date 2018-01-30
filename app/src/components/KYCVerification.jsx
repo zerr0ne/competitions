@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import simpleCertifierAbi from '../contracts/SimpleCertifier.json';
 
-const picopsAddress = '0x19d9d9d2066753f0929b51b64643a5ef899a6d3c';
+const certifierAddress = '0x19d9d9d2066753f0929b51b64643a5ef899a6d3c';
 
 class KYCVerification extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class KYCVerification extends Component {
   }
 
   async componentWillMount() {
-    const contract = await new this.props.web3.eth.Contract(simpleCertifierAbi, picopsAddress);
+    const contract = await new this.props.web3.eth.Contract(simpleCertifierAbi, certifierAddress);
     this.setState({ contract });
     this.interval = setInterval(this.checkVerified.bind(this), 1000);
   }
