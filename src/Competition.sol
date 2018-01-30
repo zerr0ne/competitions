@@ -64,7 +64,7 @@ contract Competition is DBC {
     /// @param r ellipitc curve parameter r
     /// @param s ellipitc curve parameter s
     /// @return Whether or not terms and conditions have been read and understood
-    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) returns (bool) {
+    function termsAndConditionsAreSigned(uint8 v, bytes32 r, bytes32 s) constant returns (bool) {
         return ecrecover(
             // Parity does prepend \x19Ethereum Signed Message:\n{len(message)} before signing.
             //  Signature order has also been changed in 1.6.7 and upcoming 1.7.x,
@@ -81,11 +81,11 @@ contract Competition is DBC {
     }
 
     /// @return Whether message sender is oracle or not
-    function isOracle() returns (bool) { return msg.sender == oracle; }
+    function isOracle() constant returns (bool) { return msg.sender == oracle; }
 
     /// @dev Whether message sender is KYC verified through CERTIFIER
     /// @param x Address to be checked for KYC verification
-    function isKYCVerified(address x) returns (bool) { return CERTIFIER.certified(x); }
+    function isKYCVerified(address x) constant returns (bool) { return CERTIFIER.certified(x); }
 
     // CONSTANT METHODS
 
