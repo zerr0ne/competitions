@@ -35,7 +35,9 @@ contract Competition is DBC {
 
     // Constant fields
     uint public constant MAX_CONTRIBUTION_DURATION = 4 weeks; // Max amount in seconds of competition
-    bytes32 public constant TERMS_AND_CONDITIONS = 0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad; // Hashed terms and conditions as displayed on IPFS.
+    // Competition terms and conditions as displayed on https://ipfs.io/ipfs/QmQ7DqjpxmTDbaxcH5qwv8QmGvJY7rhb8UV2QRfCEFBp8V
+    // IPFS hash encoded using http://lenschulwitz.com/base58
+    bytes32 public constant TERMS_AND_CONDITIONS = 0x1A46B45CC849E26BB3159298C3C218EF300D015ED3E23495E77F0E529CE9F69E;
     uint public MELON_BASE_UNIT = 10 ** 18;
     // Constructor fields
     address public oracle; // Information e.g. from Kovan can be passed to contract from this address
@@ -73,7 +75,7 @@ contract Competition is DBC {
             //  As a result, in order to use this value, you will have to parse it to an
             //  integer and then add 27. This will result in either a 27 or a 28.
             //  https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-            sha3("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
+            keccak256("\x19Ethereum Signed Message:\n32", TERMS_AND_CONDITIONS),
             v,
             r,
             s
