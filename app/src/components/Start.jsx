@@ -5,6 +5,7 @@ class Start extends Component {
   constructor(props) {
     super(props);
     // this.state = { networkId: 0 };
+    this.props.updateState('fundAddress', window.location.pathname.substr(1));
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
