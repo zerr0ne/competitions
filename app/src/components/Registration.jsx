@@ -118,9 +118,6 @@ class Registration extends Component {
           required
         />
         <br />
-        <label htmlFor="terms">Terms and Conditions</label>
-        <p>Some Placeholder</p>
-        <input type="checkbox" id="terms" name="terms" required />I have read the terms<br />
         <input type="submit" className="btn btn-info" value="Submit" />
         <input type="button" onClick={this.handleBack} className="btn btn-secondary" value="Back" />
       </form>

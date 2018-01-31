@@ -2,7 +2,6 @@
 /* eslint-disable */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Web3 from 'web3';
 import './index.css';
 import App from './App';
@@ -19,13 +18,7 @@ window.addEventListener('load', async () => {
   const accounts = await web3Provided.eth.getAccounts();
 
   ReactDOM.render(
-    <Router>
-      <div>
-        <Route path="/:fund/:manager/:r/:s/:v"
-          render={(props) => <App {...props} web3={web3Provided} account={accounts[0]}/>}
-        />
-      </div>
-    </Router>,
+    <App web3={web3Provided} account={accounts[0]} />,
     document.getElementById('root'),
   );
 });

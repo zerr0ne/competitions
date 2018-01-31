@@ -9,16 +9,21 @@ import Confirmation from './components/Confirmation';
 class App extends Component {
   constructor(props) {
     super(props);
+    const [fundAddress, managerAddress, r, s, v] = document.location.hash.split('/');
     this.state = {
-      fundAddress: this.props.match.params.fund,
+      fundAddress: fundAddress.substring(1),
       errorMessage: '',
       step: 1,
-      manager: this.props.match.params.manager,
-      v: this.props.match.params.v,
-      r: this.props.match.params.r,
-      s: this.props.match.params.s,
+      manager: managerAddress,
+      v,
+      r,
+      s,
     };
     this.updateState = this.updateState.bind(this);
+  }
+
+  componentDidMount() {
+    document.title = 'Registration';
   }
 
   updateState(variable, value) {
@@ -76,7 +81,7 @@ class App extends Component {
   render() {
     //  From tommymarshall/react-multi-step-form
     const progressStyle = {
-      width: `${(this.state.step / 3) * 100}%`,
+      width: `${this.state.step / 3 * 100}%`,
     };
 
     return (
