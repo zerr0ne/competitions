@@ -67,7 +67,7 @@ class Registration extends Component {
 
   handleBack(event) {
     event.preventDefault();
-    this.props.updateState('step', 2);
+    this.props.updateState('step', 1);
   }
 
   handleChange(event) {
