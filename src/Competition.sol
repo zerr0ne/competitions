@@ -1,4 +1,4 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.19;
 
 import "./ERC20Interface.sol";
 import './DBC.sol';
@@ -115,11 +115,11 @@ contract Competition is DBC {
             bool[] areDisqualified
         )
     {
-        for (uint i = 0; i <= hopefuls.length - 1; i++) {
-            fundAddrs[i] = hopefuls[i].fund;
-            fundManagers[i] = hopefuls[i].manager;
-            areCompeting[i] = hopefuls[i].isCompeting;
-            areDisqualified[i] = hopefuls[i].isDisqualified;
+        for (uint i = 0; i < hopefuls.length; i++) {
+            fundAddrs[i] = address(hopefuls[i].fund);
+            fundManagers[i] = address(hopefuls[i].manager);
+            areCompeting[i] = bool(hopefuls[i].isCompeting);
+            areDisqualified[i] = bool(hopefuls[i].isDisqualified);
         }
         return (fundAddrs, fundManagers, areCompeting, areDisqualified);
     }
@@ -163,7 +163,7 @@ contract Competition is DBC {
         bytes32 r,
         bytes32 s
     )
-        pre_cond(termsAndConditionsAreSigned(manager, v, r, s) && isKYCVerified(msg.sender))
+        pre_cond(termsAndConditionsAreSigned(manager, v, r, s) && isKYCVerified(msg.sender) && startTime >= now)
         pre_cond(registeredFundToRegistrants[fund] == address(0) && registrantToHopefulIds[msg.sender].exists == false)
     {
         require(buyinAsset == MELON_ASSET && payoutAsset == MELON_ASSET);
@@ -213,7 +213,7 @@ contract Competition is DBC {
     )
         pre_cond(isOracle())
         pre_cond(hopefuls[withId].isDisqualified == false)
-        pre_cond(block.timestamp >= endTime)
+        pre_cond(now >= endTime)
     {
         hopefuls[withId].finalSharePrice = finalSharePrice;
         hopefuls[withId].finalCompetitionRank = finalCompetitionRank;
