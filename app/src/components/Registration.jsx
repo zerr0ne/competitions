@@ -88,7 +88,7 @@ class Registration extends Component {
           .call({ from: this.props.account });
         if (hopeful.isCompeting === true) {
           this.setState({ loading: 0 });
-          this.props.updateState('step', 4);
+          this.props.updateState('step', 3);
         }
       }
     } catch (err) {
